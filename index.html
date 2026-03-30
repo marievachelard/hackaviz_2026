@@ -859,13 +859,10 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('resize', () => scrollama().resize());
 
   const stickyNames = document.getElementById('sticky-names');
-  window.addEventListener('scroll', () => {
-    if (window.scrollY > 80) {
-      stickyNames.classList.add('visible');
-    } else {
-      stickyNames.classList.remove('visible');
-    }
-  }, { passive: true });
+  const portraits = document.getElementById('portraits');
+  new IntersectionObserver(([entry]) => {
+    stickyNames.classList.toggle('visible', !entry.isIntersecting);
+  }, { threshold: 0 }).observe(portraits);
 });
 </script>
 </body>
