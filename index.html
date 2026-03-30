@@ -262,13 +262,19 @@
     .rev-big {
       font-family: var(--serif);
       font-size: clamp(4rem, 11vw, 9.5rem);
-      line-height: 1; color: var(--ink);
+      line-height: 1.05; color: var(--ink);
+      margin-bottom: 1.2rem;
+      opacity: 0; transform: translateY(18px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
     }
+    .rev-big.visible { opacity: 1; transform: translateY(0); }
     .rev-unit {
       font-size: 0.65rem; letter-spacing: 0.25em;
       text-transform: uppercase; color: var(--inkd);
       margin-bottom: 4rem;
+      opacity: 0; transition: opacity 0.6s ease 0.5s;
     }
+    .rev-unit.visible { opacity: 1; }
 
     .rev-grid {
       display: grid; grid-template-columns: 1fr 1fr;
@@ -919,6 +925,31 @@ function initScroll() {
 
   const rev = document.getElementById('revelation');
   if (rev) observer.observe(rev);
+
+  // Animation révélation : montée + compteur
+  const revBig  = document.querySelector('.rev-big');
+  const revUnit = document.querySelector('.rev-unit');
+  let revDone = false;
+  new IntersectionObserver(([entry]) => {
+    if (entry.isIntersecting && !revDone) {
+      revDone = true;
+      revBig.classList.add('visible');
+      revUnit.classList.add('visible');
+      // Compteur de 0 → 10 720
+      const target = 10720;
+      const duration = 1400;
+      const start = performance.now();
+      function tick(now) {
+        const t = Math.min((now - start) / duration, 1);
+        const ease = 1 - Math.pow(1 - t, 3); // ease-out cubic
+        const val = Math.round(ease * target);
+        revBig.textContent = val.toLocaleString('fr-FR') + ' €';
+        if (t < 1) requestAnimationFrame(tick);
+        else revBig.textContent = '10 720 €';
+      }
+      requestAnimationFrame(tick);
+    }
+  }, { threshold: 0.4 }).observe(rev);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
