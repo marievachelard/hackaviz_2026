@@ -770,31 +770,63 @@ function drawDivergingBars(svgId, pays) {
       .attr('y1', y + 4).attr('y2', y + ROW - 6)
       .attr('stroke', '#B0A090').attr('stroke-width', 1);
 
-    // Barre
+    // Barre — part de width=0, animée via animateCutsBars()
     const barX = isPos ? LW + ZERO : LW + ZERO - barW;
     svg.append('rect')
-      .attr('x', barX).attr('y', barTop + 1)
-      .attr('width', barW).attr('height', barH - 2)
+      .attr('class', 'cut-bar')
+      .attr('x', LW + ZERO - (isPos ? 0 : 0)).attr('y', barTop + 1)
+      .attr('width', 0).attr('height', barH - 2)
+      .attr('data-final-x', barX)
+      .attr('data-final-w', barW)
+      .attr('data-ispos', isPos ? '1' : '0')
       .attr('fill', color).attr('rx', 2)
       .attr('opacity', isPos ? 1 : 0.85);
 
-    // % — toujours à droite, dans la zone RW
+    // % — toujours à droite, dans la zone RW, fondu
     const statsX = LW + CW + 6;
     const pctStr = `${isPos ? '+' : ''}${pct.toFixed(0)}%`;
     svg.append('text')
+      .attr('class', 'cut-label')
       .attr('x', statsX).attr('y', barTop + 5)
       .attr('text-anchor', 'start').attr('dominant-baseline', 'middle')
       .attr('font-size', '10px').attr('font-weight', '600')
       .attr('fill', isPos ? color : INKM)
+      .attr('opacity', 0)
       .text(pctStr);
 
-    // note Md€ — sous le %
+    // note Md€ — sous le %, fondu
     svg.append('text')
+      .attr('class', 'cut-label')
       .attr('x', statsX).attr('y', barTop + 18)
       .attr('text-anchor', 'start').attr('dominant-baseline', 'middle')
       .attr('font-size', '8px').attr('fill', '#A89880')
+      .attr('opacity', 0)
       .text(d.note);
   });
+
+  // Retourne une fonction d'animation à appeler au scroll
+  return function animateCutsBars() {
+    const bars   = svgEl.querySelectorAll('.cut-bar');
+    const labels = svgEl.querySelectorAll('.cut-label');
+    bars.forEach((bar, i) => {
+      const finalX = +bar.getAttribute('data-final-x');
+      const finalW = +bar.getAttribute('data-final-w');
+      const isPos  = bar.getAttribute('data-ispos') === '1';
+      setTimeout(() => {
+        d3.select(bar)
+          .attr('x', isPos ? LW + ZERO : LW + ZERO)
+          .transition().duration(600).ease(d3.easeCubicOut)
+          .attr('x', finalX)
+          .attr('width', finalW);
+      }, i * 120);
+    });
+    // labels : 2 par ligne, décalés après la barre correspondante
+    labels.forEach((lbl, i) => {
+      setTimeout(() => {
+        d3.select(lbl).transition().duration(400).attr('opacity', 1);
+      }, Math.floor(i / 2) * 120 + 400);
+    });
+  };
 }
 
 // ─── Barres révélation (échelle absolue 0–22%) ─────────────────
@@ -830,8 +862,18 @@ function init() {
   dotAnimators['d-s-sl15'] = drawDots('d-s-sl15', 12.1, CS);
 
   setTimeout(() => {
-    drawDivergingBars('svg-e-cuts', 'GRC');
-    drawDivergingBars('svg-s-cuts', 'PRT');
+    const animE = drawDivergingBars('svg-e-cuts', 'GRC');
+    const animS = drawDivergingBars('svg-s-cuts', 'PRT');
+
+    // Déclenche l'animation quand le bloc acte-2013 entre dans le viewport
+    const acte2013 = document.getElementById('acte-2013');
+    let cutsAnimated = false;
+    new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting && !cutsAnimated) {
+        cutsAnimated = true;
+        animE(); animS();
+      }
+    }, { threshold: 0.25 }).observe(acte2013);
   }, 100);
 }
 
