@@ -123,7 +123,10 @@
       position: sticky; top: 0; z-index: 100;
       display: grid; grid-template-columns: 1fr 1fr;
       background: var(--paper);
+      opacity: 0;
+      transition: opacity 0.4s ease;
     }
+    #sticky-names.visible { opacity: 1; }
 
     .sn-left, .sn-right {
       padding: 0.65rem 3.5rem;
@@ -854,6 +857,15 @@ document.addEventListener('DOMContentLoaded', () => {
   init();
   initScroll();
   window.addEventListener('resize', () => scrollama().resize());
+
+  const stickyNames = document.getElementById('sticky-names');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 80) {
+      stickyNames.classList.add('visible');
+    } else {
+      stickyNames.classList.remove('visible');
+    }
+  }, { passive: true });
 });
 </script>
 </body>
