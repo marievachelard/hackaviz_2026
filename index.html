@@ -728,12 +728,13 @@ function drawDivergingBars(svgId, pays) {
   ];
 
   const W    = svgEl.parentElement.clientWidth || 380;
-  const ROW  = 40;
+  const ROW  = 52;
   const H    = data.length * ROW + 10;
-  const LW   = 118; // largeur label
-  const CW   = W - LW - 20; // largeur chart
-  const ZERO = CW / 2; // centre = 0%
-  const MAX  = 50; // borne % pour l'échelle
+  const LW   = 130; // largeur label catégorie
+  const RW   = 90;  // largeur réservée aux stats (%, note) à droite
+  const CW   = W - LW - RW; // largeur zone barre
+  const ZERO = CW / 2;
+  const MAX  = 50;
 
   svgEl.setAttribute('viewBox', `0 0 ${W} ${H}`);
   svgEl.setAttribute('height', H);
@@ -747,56 +748,51 @@ function drawDivergingBars(svgId, pays) {
     const absPct = Math.min(Math.abs(pct), MAX);
     const barW  = scaleHalf(absPct);
     const y     = i * ROW + 4;
-    const midY  = y + ROW / 2 - 2;
+    const barTop = y + 18;
+    const barH   = 16;
 
-    // Label catégorie
+    // Label catégorie (en haut de la ligne)
     svg.append('text')
-      .attr('x', LW - 8).attr('y', midY)
+      .attr('x', LW - 8).attr('y', y + 13)
       .attr('text-anchor', 'end').attr('dominant-baseline', 'middle')
       .attr('font-size', '10.5px').attr('fill', INKM)
       .text(d.cat);
 
     // Piste fond
     svg.append('rect')
-      .attr('x', LW).attr('y', y + 5)
-      .attr('width', CW).attr('height', ROW - 12)
+      .attr('x', LW).attr('y', barTop)
+      .attr('width', CW).attr('height', barH)
       .attr('fill', PAPERD).attr('rx', 3);
 
     // Ligne zéro
     svg.append('line')
       .attr('x1', LW + ZERO).attr('x2', LW + ZERO)
-      .attr('y1', y + 2).attr('y2', y + ROW - 4)
+      .attr('y1', y + 4).attr('y2', y + ROW - 6)
       .attr('stroke', '#B0A090').attr('stroke-width', 1);
 
     // Barre
     const barX = isPos ? LW + ZERO : LW + ZERO - barW;
     svg.append('rect')
-      .attr('x', barX).attr('y', y + 7)
-      .attr('width', barW).attr('height', ROW - 16)
-      .attr('fill', color)
-      .attr('rx', 2)
-      .attr('opacity', isPos ? 1 : 0.8);
+      .attr('x', barX).attr('y', barTop + 1)
+      .attr('width', barW).attr('height', barH - 2)
+      .attr('fill', color).attr('rx', 2)
+      .attr('opacity', isPos ? 1 : 0.85);
 
-    // % + valeurs absolues
+    // % — toujours à droite, dans la zone RW
+    const statsX = LW + CW + 6;
     const pctStr = `${isPos ? '+' : ''}${pct.toFixed(0)}%`;
-    const labelX = isPos
-      ? LW + ZERO + barW + 5
-      : LW + ZERO - barW - 5;
-
     svg.append('text')
-      .attr('x', labelX).attr('y', midY - 4)
-      .attr('text-anchor', isPos ? 'start' : 'end')
-      .attr('dominant-baseline', 'middle')
-      .attr('font-size', '10px').attr('font-weight', '500')
+      .attr('x', statsX).attr('y', barTop + 5)
+      .attr('text-anchor', 'start').attr('dominant-baseline', 'middle')
+      .attr('font-size', '10px').attr('font-weight', '600')
       .attr('fill', isPos ? color : INKM)
       .text(pctStr);
 
+    // note Md€ — sous le %
     svg.append('text')
-      .attr('x', labelX).attr('y', midY + 8)
-      .attr('text-anchor', isPos ? 'start' : 'end')
-      .attr('dominant-baseline', 'middle')
-      .attr('font-size', '8.5px')
-      .attr('fill', '#A89880')
+      .attr('x', statsX).attr('y', barTop + 18)
+      .attr('text-anchor', 'start').attr('dominant-baseline', 'middle')
+      .attr('font-size', '8px').attr('fill', '#A89880')
       .text(d.note);
   });
 }
