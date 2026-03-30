@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Soumission — PictaClaude — Hackaviz 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --eleni: #1D4E8F;
+      --sofia: #B84A1E;
+      --paper: #F4EEE2;
+      --ink:   #1C1410;
+      --inkm:  #6A5C50;
+      --inkd:  #A89880;
+    }
+
+    @page {
+      size: A4;
+      margin: 0;
+    }
+
+    body {
+      width: 210mm;
+      height: 297mm;
+      overflow: hidden;
+      margin: 0 auto;
+      padding: 16mm 18mm 14mm;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: 'Inter', system-ui, sans-serif;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    /* ── En-tête ── */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--inkd);
+      margin-bottom: 1.5rem;
+    }
+
+    .header-left .event {
+      font-size: 0.55rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--inkd);
+      margin-bottom: 0.35rem;
+    }
+
+    .header-left .title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1.4rem;
+      font-weight: 400;
+      line-height: 1.2;
+      color: var(--ink);
+    }
+
+    .header-left .title .ne { color: var(--eleni); }
+    .header-left .title .ns { color: var(--sofia); }
+
+    .header-right { text-align: right; }
+
+    .header-right .team-label {
+      font-size: 0.55rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--inkd);
+      margin-bottom: 0.25rem;
+    }
+
+    .header-right .team-name {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1rem;
+      color: var(--ink);
+    }
+
+    .header-right .members {
+      font-size: 0.65rem;
+      color: var(--inkm);
+      margin-top: 0.2rem;
+      line-height: 1.5;
+    }
+
+    /* ── URL ── */
+    .url-block {
+      background: white;
+      border-left: 3px solid var(--eleni);
+      padding: 0.75rem 1rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .url-label {
+      font-size: 0.55rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--inkd);
+      white-space: nowrap;
+    }
+
+    .url-value {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 0.88rem;
+      color: var(--eleni);
+      text-decoration: none;
+    }
+
+    /* ── Corps ── */
+    .section-label {
+      font-size: 0.55rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--inkd);
+      margin-bottom: 0.6rem;
+    }
+
+    .pitch {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 0.9rem;
+      font-style: italic;
+      line-height: 1.75;
+      color: var(--ink);
+      margin-bottom: 1.4rem;
+    }
+
+    .body-text {
+      font-size: 0.75rem;
+      line-height: 1.7;
+      color: var(--inkm);
+      margin-bottom: 0.85rem;
+    }
+
+    .body-text strong {
+      color: var(--ink);
+      font-weight: 500;
+    }
+
+    /* ── Données utilisées ── */
+    .data-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.6rem;
+      margin-top: 1.1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .data-item {
+      padding: 0.6rem 0.8rem;
+      background: white;
+      border-top: 2px solid var(--inkd);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .data-item .data-name {
+      font-size: 0.62rem;
+      font-weight: 500;
+      color: var(--ink);
+      margin-bottom: 0.15rem;
+    }
+
+    .data-item .data-desc {
+      font-size: 0.58rem;
+      color: var(--inkm);
+      line-height: 1.45;
+    }
+
+    /* ── Pied de page ── */
+    footer {
+      padding-top: 1rem;
+      border-top: 1px solid var(--inkd);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    footer .foot-left, footer .foot-right {
+      font-size: 0.55rem;
+      color: var(--inkd);
+      letter-spacing: 0.1em;
+    }
+
+    @media print {
+      body { margin: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- En-tête -->
+  <header>
+    <div class="header-left">
+      <div class="event">Hackaviz Toulouse 2026 · Soumission</div>
+      <div class="title">
+        <span class="ne">Deux femmes.</span> <span class="ns">Une crise.</span><br>
+        Destins croisés.
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="team-label">Équipe</div>
+      <div class="team-name">PictaClaude</div>
+      <div class="members">
+        Alexandre · Lisa<br>
+        Jade · Marie
+      </div>
+    </div>
+  </header>
+
+  <!-- URL -->
+  <div class="url-block">
+    <div class="url-label">URL</div>
+    <a class="url-value" href="https://marievachelard.github.io/hackaviz_2026/">https://marievachelard.github.io/hackaviz_2026/</a>
+  </div>
+
+  <!-- Pitch -->
+  <div class="section-label">Notre angle</div>
+  <p class="pitch">
+    Eleni naît en Grèce. Sofia naît au Portugal. La même année : 1985.<br>
+    En 2008, leurs gouvernements dépensent des sommes comparables. La crise arrive.<br>
+    Mêmes créanciers, mêmes exigences — des choix opposés. En 2023, leurs États dépensent
+    exactement le même montant par habitant. Leurs vies ne racontent pas la même histoire.
+  </p>
+
+  <!-- Description -->
+  <div class="section-label">Notre approche</div>
+  <p class="body-text">
+    Nous avons choisi de <strong>personnifier la donnée</strong> : plutôt qu'une comparaison abstraite de courbes
+    budgétaires, nous suivons deux femmes fictives dont les trajectoires incarnent les conséquences des arbitrages
+    publics. Le format est un <strong>récit scrollant interactif</strong>, divisé en quatre actes — 2008, 2010, 2013,
+    2015 — jusqu'à la révélation de 2023 : 10 720 € par habitant dans les deux pays, pour des réalités très différentes.
+  </p>
+  <p class="body-text">
+    La visualisation mobilise des <strong>cercles proportionnels</strong> pour les masses budgétaires, des <strong>grilles
+    de points</strong> pour le chômage et la précarité, des <strong>barres divergentes</strong> pour les coupes
+    sectorielles, et des <strong>barres de progression</strong> pour les indicateurs de bien-être en 2023.
+  </p>
+  <p class="body-text">
+    Ce projet est aussi une <strong>expérimentation métier</strong> : nous avons utilisé <strong>Claude Code</strong> pour
+    la toute première fois, afin de comprendre son fonctionnement et d'évaluer l'impact que ce type d'outil peut avoir
+    sur le quotidien d'un·e data analyst — de l'exploration des données à la mise en forme narrative et visuelle.
+  </p>
+
+  <!-- Données -->
+  <div class="section-label">Données utilisées</div>
+  <div class="data-grid">
+    <div class="data-item">
+      <div class="data-name">OCDE COFOG — depenses_euro</div>
+      <div class="data-desc">Dépenses publiques par pays, thème et année (2002–2024). Fichier principal de l'Hackaviz.</div>
+    </div>
+    <div class="data-item">
+      <div class="data-name">OCDE Well-being Data Monitor — bien_etre</div>
+      <div class="data-desc">Indicateurs de bien-être subjectif et objectif par pays et année (2004–2025).</div>
+    </div>
+    <div class="data-item">
+      <div class="data-name">Eurostat — population</div>
+      <div class="data-desc">Population par pays et année, pour le calcul des dépenses par habitant.</div>
+    </div>
+    <div class="data-item">
+      <div class="data-name">Eurostat — dette, pib</div>
+      <div class="data-desc">Contexte macro-économique pour situer les choix budgétaires post-crise.</div>
+    </div>
+  </div>
+
+  <!-- Pied de page -->
+  <footer>
+    <div class="foot-left">PictaClaude · Alexandre, Lisa, Jade, Marie</div>
+    <div class="foot-right">Hackaviz Toulouse 2026 · Thème : Bien-être & dépenses publiques</div>
+  </footer>
+
+</body>
+</html>
