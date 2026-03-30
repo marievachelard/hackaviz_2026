@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Eleni. Sofia. 1985.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+  <script src="https://unpkg.com/scrollama@3.2.0/build/scrollama.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --eleni:  #1D4E8F;
+      --sofia:  #B84A1E;
+      --paper:  #F4EEE2;
+      --paperd: #E6DEC8;
+      --ink:    #1C1410;
+      --inkm:   #6A5C50;
+      --inkd:   #A89880;
+      --serif:  'Playfair Display', Georgia, serif;
+      --sans:   'Inter', system-ui, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--sans);
+      overflow-x: hidden;
+    }
+
+    /* Grain papier */
+    body::after {
+      content:''; position:fixed; inset:0;
+      pointer-events:none; z-index:9999;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.42 0 0 0 0 0.35 0 0 0 0 0.26 0 0 0 0.07 0'/%3E%3C/filter%3E%3Crect width='250' height='250' filter='url(%23n)'/%3E%3C/svg%3E");
+      mix-blend-mode: multiply;
+    }
+
+    /* ── HERO ─────────────────────────────────────────────────── */
+    #hero {
+      height: 50vh; min-height: 300px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+    }
+
+    .hero-title {
+      font-family: var(--serif);
+      font-size: clamp(2.8rem, 7.5vw, 7rem);
+      font-weight: 400; text-align: center;
+    }
+    .ne { color: var(--eleni); }
+    .ns { color: var(--sofia); }
+    .ny { color: var(--inkd); }
+
+    .hero-sub {
+      margin-top: 1rem; font-size: 0.65rem;
+      letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--inkm);
+    }
+
+    .scroll-cue {
+      position: absolute; bottom: 1.2rem; left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.6rem; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--inkd);
+      animation: bob 2.2s ease-in-out infinite;
+    }
+    @keyframes bob {
+      0%,100%{ transform:translateX(-50%) translateY(0); }
+      50%    { transform:translateX(-50%) translateY(6px); }
+    }
+
+    /* ── PORTRAITS ────────────────────────────────────────────── */
+    #portraits {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .portrait-block {
+      padding: 3.5rem 3.5rem 2.5rem;
+      display: flex; flex-direction: column; align-items: center;
+      gap: 1.5rem;
+    }
+
+    .portrait-svg { width: 180px; height: 220px; }
+
+    .portrait-name {
+      font-family: var(--serif);
+      font-size: clamp(1.8rem, 3vw, 3rem);
+      font-weight: 400; text-align: center;
+    }
+    .portrait-city {
+      font-size: 0.62rem; letter-spacing: 0.22em;
+      text-transform: uppercase; color: var(--inkm);
+      text-align: center; margin-top: -1rem;
+    }
+    .portrait-text {
+      font-size: 0.85rem; color: var(--inkm);
+      line-height: 1.75; max-width: 38ch; text-align: center;
+    }
+
+    /* ── EN-TÊTE STICKY ───────────────────────────────────────── */
+    #sticky-names {
+      position: sticky; top: 0; z-index: 100;
+      display: grid; grid-template-columns: 1fr 1fr;
+      background: var(--paper);
+    }
+
+    .sn-left, .sn-right {
+      padding: 0.65rem 3.5rem;
+      font-size: 0.65rem; letter-spacing: 0.25em;
+      text-transform: uppercase; font-weight: 500;
+    }
+    .sn-left  { color: var(--eleni); }
+    .sn-right { color: var(--sofia); }
+
+    /* ── ACTE ─────────────────────────────────────────────────── */
+    .acte {
+      display: grid; grid-template-columns: 1fr 1fr;
+      opacity: 0; transform: translateY(20px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .acte.visible { opacity: 1; transform: translateY(0); }
+
+    .acte-left, .acte-right { padding: 4rem 3.5rem; }
+
+    .eyebrow {
+      font-size: 0.6rem; letter-spacing: 0.28em;
+      text-transform: uppercase; color: var(--inkd);
+      margin-bottom: 0.8rem;
+    }
+
+    .act-h {
+      font-family: var(--serif);
+      font-size: clamp(1.2rem, 2.2vw, 1.8rem);
+      font-weight: 400; line-height: 1.3;
+      margin-bottom: 1rem;
+    }
+    .act-h-e { color: var(--eleni); }
+    .act-h-s { color: var(--sofia); }
+
+    .act-body {
+      font-size: 0.82rem; color: var(--inkm);
+      line-height: 1.8; max-width: 42ch;
+      margin-bottom: 2rem;
+    }
+
+    /* ── CERCLES BUDGET ───────────────────────────────────────── */
+    .budget-circle-wrap {
+      display: flex; align-items: flex-end;
+      justify-content: flex-start; gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    /* ── DOTS 100 ─────────────────────────────────────────────── */
+    .dots-block { margin: 2rem 0; }
+
+    .dots-label {
+      font-size: 0.65rem; letter-spacing: 0.1em;
+      color: var(--inkm); margin-bottom: 0.8rem;
+      max-width: 38ch;
+    }
+
+    .dots-svg-wrap { cursor: default; }
+
+    .dots-svg-wrap circle {
+      transition: r 0.15s ease, opacity 0.15s ease;
+    }
+    .dots-svg-wrap circle.filled:hover {
+      r: 7; opacity: 1;
+    }
+
+    .dots-big-val {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 4vw, 3rem);
+      margin-top: 0.8rem;
+    }
+
+    /* ── BARRES DIVERGENTES 2013 ──────────────────────────────── */
+    .cuts-block { margin: 1.5rem 0; }
+
+    .cuts-label {
+      font-size: 0.6rem; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--inkd);
+      margin-bottom: 1rem;
+    }
+
+    /* ── BLOCS CHOC ───────────────────────────────────────────── */
+    .shock-block {
+      margin: 2rem 0; padding: 1.5rem 1.8rem;
+      background: var(--paperd);
+      border-left: 3px solid var(--eleni);
+    }
+    .shock-num {
+      font-family: var(--serif);
+      font-size: clamp(3rem, 6vw, 5.5rem);
+      color: var(--eleni); line-height: 1;
+      margin-bottom: 0.4rem;
+    }
+    .shock-cap {
+      font-size: 0.78rem; color: var(--inkm);
+      line-height: 1.65; max-width: 36ch;
+    }
+
+    .good-block {
+      margin: 2rem 0; padding: 1.5rem 1.8rem;
+      background: var(--paperd);
+      border-left: 3px solid var(--sofia);
+    }
+    .good-num {
+      font-family: var(--serif);
+      font-size: clamp(3rem, 6vw, 5.5rem);
+      color: var(--sofia); line-height: 1;
+      margin-bottom: 0.4rem;
+    }
+    .good-cap {
+      font-size: 0.78rem; color: var(--inkm);
+      line-height: 1.65; max-width: 36ch;
+    }
+
+    /* ── RÉVÉLATION ───────────────────────────────────────────── */
+    #revelation {
+      padding: 7rem 3.5rem 5rem;
+      text-align: center;
+    }
+    .rev-pre {
+      font-size: 0.65rem; letter-spacing: 0.28em;
+      text-transform: uppercase; color: var(--inkm);
+      margin-bottom: 0.8rem;
+    }
+    .rev-big {
+      font-family: var(--serif);
+      font-size: clamp(4rem, 11vw, 9.5rem);
+      line-height: 1; color: var(--ink);
+    }
+    .rev-unit {
+      font-size: 0.65rem; letter-spacing: 0.25em;
+      text-transform: uppercase; color: var(--inkd);
+      margin-bottom: 4rem;
+    }
+
+    .rev-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 4rem; max-width: 860px;
+      margin: 0 auto; text-align: left;
+    }
+
+    .rev-name {
+      font-family: var(--serif);
+      font-size: 1.4rem; margin-bottom: 2rem;
+    }
+
+    .bar-ind { margin-bottom: 1.8rem; }
+    .bar-ind-lbl {
+      font-size: 0.62rem; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--inkm);
+      margin-bottom: 0.5rem;
+    }
+    .bar-track {
+      height: 7px; background: var(--paperd);
+      border-radius: 4px; overflow: hidden;
+      margin-bottom: 0.35rem;
+    }
+    .bar-fill {
+      height: 100%; border-radius: 4px;
+      width: 0; transition: width 1.3s cubic-bezier(.4,0,.2,1);
+    }
+    .bar-val {
+      font-family: var(--serif); font-size: 1.15rem;
+    }
+
+    /* ── CLÔTURE ──────────────────────────────────────────────── */
+    #closing {
+      min-height: 55vh;
+      display: flex; align-items: center;
+      justify-content: center; flex-direction: column;
+      padding: 6rem 3rem; text-align: center;
+    }
+    .closing-txt {
+      font-family: var(--serif);
+      font-size: clamp(1.3rem, 3.5vw, 2.8rem);
+      font-weight: 400; line-height: 1.5;
+      max-width: 22ch;
+    }
+    .closing-em { font-style: italic; color: var(--sofia); }
+    .closing-src {
+      margin-top: 3rem; font-size: 0.6rem;
+      letter-spacing: 0.1em; color: var(--inkd);
+    }
+
+    @media(max-width:680px){
+      #portraits,#sticky-names,.acte,.rev-grid {
+        grid-template-columns:1fr;
+      }
+      .portrait-block:first-child, .sn-left, .acte-left {
+        border-right:none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- ════════ HERO ════════════════════════════════════════════════ -->
+<section id="hero" style="position:relative">
+  <h1 class="hero-title">
+    <span class="ne">Eleni.</span><span class="ns"> Sofia.</span><span class="ny"> 1985.</span>
+  </h1>
+  <p class="hero-sub">Grèce &nbsp;·&nbsp; Portugal &nbsp;·&nbsp; 2008–2023</p>
+  <div class="scroll-cue">↓ défiler</div>
+</section>
+
+<!-- ════════ PORTRAITS ══════════════════════════════════════════ -->
+<section id="portraits">
+
+  <!-- Eleni -->
+  <div class="portrait-block">
+    <div class="portrait-name" style="color:var(--eleni)">Eleni</div>
+    <div class="portrait-city">Athènes · Grèce</div>
+    <p class="portrait-text">
+      23 ans en 2008. Son État dépense <strong>11 107 €</strong> par habitant.
+      La même tempête arrive pour elle et pour Sofia.
+    </p>
+  </div>
+
+  <!-- Sofia -->
+  <div class="portrait-block">
+    <div class="portrait-name" style="color:var(--sofia)">Sofia</div>
+    <div class="portrait-city">Lisbonne · Portugal</div>
+    <p class="portrait-text">
+      23 ans en 2008. Son État dépense <strong>7 716 €</strong> par habitant.
+      Moins — mais avec une autre façon de protéger.
+    </p>
+  </div>
+
+</section>
+
+<!-- ════════ NOMS STICKY ═════════════════════════════════════════ -->
+<div id="sticky-names">
+  <div class="sn-left">Eleni &nbsp;·&nbsp; Grèce</div>
+  <div class="sn-right">Sofia &nbsp;·&nbsp; Portugal</div>
+</div>
+
+<!-- ════════ ACTE 1 — 2008 ═══════════════════════════════════════ -->
+<div class="acte" id="acte-2008">
+  <div class="acte-left">
+    <div class="eyebrow">2008 · Les budgets</div>
+    <h2 class="act-h act-h-e">123 milliards d'euros</h2>
+    <p class="act-body">
+      Au sommet de la croissance. La santé et la protection sociale
+      absorbent plus de la moitié des dépenses.
+    </p>
+    <div class="budget-circle-wrap" id="circ-e"></div>
+  </div>
+  <div class="acte-right">
+    <div class="eyebrow">2008 · Les budgets</div>
+    <h2 class="act-h act-h-s">81 milliards d'euros</h2>
+    <p class="act-body">
+      Moins en valeur absolue. Mais une part proportionnellement
+      plus grande consacrée aux filets de sécurité.
+    </p>
+    <div class="budget-circle-wrap" id="circ-s"></div>
+  </div>
+</div>
+
+<!-- ════════ ACTE 2 — 2010 ═══════════════════════════════════════ -->
+<div class="acte" id="acte-2010">
+  <div class="acte-left">
+    <div class="eyebrow">2010 · La crise frappe</div>
+    <h2 class="act-h act-h-e">La Grèce signe le mémorandum</h2>
+    <div class="dots-block">
+      <div class="dots-label">
+        Chômage longue durée &mdash; chaque point = 1% de la population active
+      </div>
+      <div class="dots-svg-wrap" id="d-e-2010"></div>
+      <div class="dots-big-val" style="color:var(--eleni)">5,8 %</div>
+    </div>
+  </div>
+  <div class="acte-right">
+    <div class="eyebrow">2011 · La crise frappe</div>
+    <h2 class="act-h act-h-s">Le Portugal signe à son tour</h2>
+    <div class="dots-block">
+      <div class="dots-label">
+        Chômage longue durée &mdash; chaque point = 1% de la population active
+      </div>
+      <div class="dots-svg-wrap" id="d-s-2010"></div>
+      <div class="dots-big-val" style="color:var(--sofia)">6,4 %</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ ACTE 3 — 2013 ═══════════════════════════════════════ -->
+<div class="acte" id="acte-2013">
+  <div class="acte-left">
+    <div class="eyebrow">2013 · Les coupes</div>
+    <h2 class="act-h act-h-e">Couper partout.<br/>Sauf là où ça coûte.</h2>
+    <div class="cuts-block">
+      <div class="cuts-label">Évolution des dépenses 2008 → 2013</div>
+      <svg id="svg-e-cuts" width="100%" height="220" style="overflow:visible"></svg>
+    </div>
+    <div class="shock-block">
+      <div class="shock-num">× 34</div>
+      <p class="shock-cap">
+        La ligne "soutien à l'économie générale" (renflouement des banques)
+        passe de <strong>0,6</strong> à <strong>20,5 Md€</strong>.
+        L'argent qui aurait pu protéger Eleni.
+      </p>
+    </div>
+  </div>
+  <div class="acte-right">
+    <div class="eyebrow">2013 · Les coupes</div>
+    <h2 class="act-h act-h-s">Couper,<br/>mais choisir où.</h2>
+    <div class="cuts-block">
+      <div class="cuts-label">Évolution des dépenses 2008 → 2013</div>
+      <svg id="svg-s-cuts" width="100%" height="220" style="overflow:visible"></svg>
+    </div>
+    <div class="good-block">
+      <div class="good-num">+ 21,8 %</div>
+      <p class="good-cap">
+        La protection sociale portugaise <strong>augmente</strong> pendant
+        la crise, de 27,3 à 33,2 Md€. Sofia garde son filet.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ ACTE 4 — 2015 ═══════════════════════════════════════ -->
+<div class="acte" id="acte-2015">
+  <div class="acte-left">
+    <div class="eyebrow">2015 · Ce que les budgets font aux vies</div>
+    <h2 class="act-h act-h-e">Les chiffres d'Eleni</h2>
+
+    <div class="dots-block">
+      <div class="dots-label">Chômage longue durée &mdash; chaque point = 1%</div>
+      <div class="dots-svg-wrap" id="d-e-ch15"></div>
+      <div class="dots-big-val" style="color:var(--eleni)">18,4 %</div>
+    </div>
+
+    <div class="dots-block">
+      <div class="dots-label">Surcharge financière logement &mdash; chaque point = 1%</div>
+      <div class="dots-svg-wrap" id="d-e-lg15"></div>
+      <div class="dots-big-val" style="color:var(--eleni)">39,5 %</div>
+    </div>
+
+    <div class="dots-block">
+      <div class="dots-label">Manque de soutien social &mdash; chaque point = 1%</div>
+      <div class="dots-svg-wrap" id="d-e-sl15"></div>
+      <div class="dots-big-val" style="color:var(--eleni)">17,7 %</div>
+    </div>
+  </div>
+  <div class="acte-right">
+    <div class="eyebrow">2015 · Ce que les budgets font aux vies</div>
+    <h2 class="act-h act-h-s">Les chiffres de Sofia</h2>
+
+    <div class="dots-block">
+      <div class="dots-label">Chômage longue durée &mdash; chaque point = 1%</div>
+      <div class="dots-svg-wrap" id="d-s-ch15"></div>
+      <div class="dots-big-val" style="color:var(--sofia)">8,0 %</div>
+    </div>
+
+    <div class="dots-block">
+      <div class="dots-label">Surcharge financière logement &mdash; chaque point = 1%</div>
+      <div class="dots-svg-wrap" id="d-s-lg15"></div>
+      <div class="dots-big-val" style="color:var(--sofia)">22,7 %</div>
+    </div>
+
+    <div class="dots-block">
+      <div class="dots-label">Manque de soutien social &mdash; chaque point = 1%</div>
+      <div class="dots-svg-wrap" id="d-s-sl15"></div>
+      <div class="dots-big-val" style="color:var(--sofia)">12,1 %</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ RÉVÉLATION 2023 ════════════════════════════════════ -->
+<section id="revelation">
+  <p class="rev-pre">2023 — leurs gouvernements dépensent désormais</p>
+  <div class="rev-big">10 720 €</div>
+  <div class="rev-unit">par habitant &nbsp;·&nbsp; exactement pareil</div>
+
+  <div class="rev-grid">
+    <div>
+      <div class="rev-name" style="color:var(--eleni)">Eleni</div>
+      <div class="bar-ind">
+        <div class="bar-ind-lbl">Chômage longue durée</div>
+        <div class="bar-track"><div class="bar-fill" id="b-e-c" style="background:var(--eleni)"></div></div>
+        <div class="bar-val" style="color:var(--eleni)">6,3 %</div>
+      </div>
+      <div class="bar-ind">
+        <div class="bar-ind-lbl">Logements surpeuplés</div>
+        <div class="bar-track"><div class="bar-fill" id="b-e-l" style="background:var(--eleni)"></div></div>
+        <div class="bar-val" style="color:var(--eleni)">16,9 %</div>
+      </div>
+      <div class="bar-ind">
+        <div class="bar-ind-lbl">Manque de soutien social</div>
+        <div class="bar-track"><div class="bar-fill" id="b-e-s" style="background:var(--eleni)"></div></div>
+        <div class="bar-val" style="color:var(--eleni)">18,6 %</div>
+      </div>
+    </div>
+    <div>
+      <div class="rev-name" style="color:var(--sofia)">Sofia</div>
+      <div class="bar-ind">
+        <div class="bar-ind-lbl">Chômage longue durée</div>
+        <div class="bar-track"><div class="bar-fill" id="b-s-c" style="background:var(--sofia)"></div></div>
+        <div class="bar-val" style="color:var(--sofia)">2,7 %</div>
+      </div>
+      <div class="bar-ind">
+        <div class="bar-ind-lbl">Logements surpeuplés</div>
+        <div class="bar-track"><div class="bar-fill" id="b-s-l" style="background:var(--sofia)"></div></div>
+        <div class="bar-val" style="color:var(--sofia)">6,5 %</div>
+      </div>
+      <div class="bar-ind">
+        <div class="bar-ind-lbl">Manque de soutien social</div>
+        <div class="bar-track"><div class="bar-fill" id="b-s-s" style="background:var(--sofia)"></div></div>
+        <div class="bar-val" style="color:var(--sofia)">11,1 %</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ CLÔTURE ═════════════════════════════════════════════ -->
+<section id="closing">
+  <p class="closing-txt">
+    On ne mesure pas un État<br/>
+    à ce qu'il dépense.<br/>
+    Mais à ce qu'il <span class="closing-em">protège.</span>
+  </p>
+  <p class="closing-src">
+    Sources : OCDE COFOG · OCDE Well-being Data Monitor · Eurostat &nbsp;·&nbsp; Hackaviz Toulouse 2026
+  </p>
+</section>
+
+<!-- ════════ JAVASCRIPT ══════════════════════════════════════════ -->
+<script>
+const CE = '#1D4E8F', CS = '#B84A1E';
+const PAPER = '#F4EEE2', PAPERD = '#E6DEC8', INK = '#1C1410', INKM = '#6A5C50';
+
+// ─── Cercles proportionnels ────────────────────────────────────
+function drawBudgetCircle(id, value, refValue, color) {
+  const el = document.getElementById(id);
+  if (!el) return;
+
+  const MAX_R = 90;
+  const r     = MAX_R * Math.sqrt(value / refValue);
+  const S     = MAX_R * 2 + 30;
+
+  const div = document.createElement('div');
+  div.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:10px;cursor:default';
+
+  const svg = d3.select(div).append('svg')
+    .attr('width', S).attr('height', S)
+    .attr('viewBox', `0 0 ${S} ${S}`)
+    .style('overflow', 'visible')
+    .style('transition', 'transform .3s ease');
+
+  div.addEventListener('mouseenter', () => svg.style('transform','scale(1.06)'));
+  div.addEventListener('mouseleave', () => svg.style('transform','scale(1)'));
+
+  const cx = S / 2, cy = S / 2;
+
+  // Halo
+  svg.append('circle')
+    .attr('cx', cx).attr('cy', cy).attr('r', r + 12)
+    .attr('fill', color).attr('opacity', 0.07);
+
+  // Anneau
+  svg.append('circle')
+    .attr('cx', cx).attr('cy', cy).attr('r', r)
+    .attr('fill', color).attr('opacity', 0.12)
+    .attr('stroke', color).attr('stroke-width', 1.5);
+
+  // Valeur
+  svg.append('text')
+    .attr('x', cx).attr('y', cy - 6)
+    .attr('text-anchor', 'middle').attr('dominant-baseline', 'middle')
+    .attr('font-family', "'Playfair Display',serif")
+    .attr('font-size', Math.max(14, r * 0.38))
+    .attr('fill', color).attr('font-weight', '400')
+    .text(value);
+
+  svg.append('text')
+    .attr('x', cx).attr('y', cy + r * 0.28)
+    .attr('text-anchor', 'middle')
+    .attr('font-size', 9).attr('fill', INKM)
+    .attr('letter-spacing', 1)
+    .text('Md€');
+
+  el.appendChild(div);
+}
+
+// ─── Dots 100 avec fraction précise ───────────────────────────
+// 100 dots = 100%, chaque dot = 1%, clip pour fraction
+function drawDots(containerId, pct, color) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+
+  const TOTAL = 100;
+  const R = 5, GAP = 4, COLS = 20;
+  const ROWS = TOTAL / COLS; // 5 rows
+  const W = COLS * (R * 2 + GAP) - GAP;
+  const H = ROWS * (R * 2 + GAP) - GAP;
+
+  const svg = d3.select(el).append('svg')
+    .attr('width', '100%')
+    .attr('viewBox', `0 0 ${W} ${H}`)
+    .attr('style', 'max-width:' + W + 'px');
+
+  const defs = svg.append('defs');
+
+  // Animation : on va stocker les cercles filled pour les animer
+  const filledCircles = [];
+
+  for (let i = 0; i < TOTAL; i++) {
+    const col = i % COLS;
+    const row = Math.floor(i / COLS);
+    const cx = col * (R * 2 + GAP) + R;
+    const cy = row * (R * 2 + GAP) + R;
+
+    const filled = Math.max(0, Math.min(1, pct - i));
+
+    if (filled <= 0) {
+      svg.append('circle')
+        .attr('cx', cx).attr('cy', cy).attr('r', R)
+        .attr('fill', PAPERD)
+        .attr('stroke', '#C8BAA8').attr('stroke-width', 0.5);
+    } else if (filled >= 1) {
+      const c = svg.append('circle')
+        .attr('cx', cx).attr('cy', cy).attr('r', R)
+        .attr('fill', color)
+        .attr('class', 'filled')
+        .attr('opacity', 0); // départ transparent pour animation
+
+      // Tooltip hover
+      c.append('title').text(`${i + 1}%`);
+      filledCircles.push({ node: c, delay: i * 18 });
+    } else {
+      // Dot partiel : clip horizontal
+      const clipId = `cp-${containerId}-${i}`;
+      defs.append('clipPath').attr('id', clipId)
+        .append('rect')
+        .attr('x', cx - R).attr('y', cy - R)
+        .attr('width', R * 2 * filled).attr('height', R * 2);
+
+      svg.append('circle')
+        .attr('cx', cx).attr('cy', cy).attr('r', R)
+        .attr('fill', PAPERD).attr('stroke', '#C8BAA8').attr('stroke-width', 0.5);
+
+      const c = svg.append('circle')
+        .attr('cx', cx).attr('cy', cy).attr('r', R)
+        .attr('fill', color)
+        .attr('clip-path', `url(#${clipId})`)
+        .attr('opacity', 0);
+
+      filledCircles.push({ node: c, delay: i * 18 });
+    }
+  }
+
+  // Hover sur les dots remplis : pulse
+  svg.selectAll('circle.filled')
+    .on('mouseover', function() {
+      d3.select(this).transition().duration(120).attr('r', R + 2.5);
+    })
+    .on('mouseout', function() {
+      d3.select(this).transition().duration(120).attr('r', R);
+    });
+
+  // Retourner la fonction d'animation (appelée au scroll)
+  return function animateDots() {
+    filledCircles.forEach(({ node, delay }) => {
+      setTimeout(() => {
+        node.transition().duration(200).attr('opacity', 1);
+      }, delay);
+    });
+  };
+}
+
+// ─── Barres divergentes 2013 ──────────────────────────────────
+function drawDivergingBars(svgId, pays) {
+  const svgEl = document.getElementById(svgId);
+  if (!svgEl) return;
+
+  const color = pays === 'GRC' ? CE : CS;
+
+  const data = pays === 'GRC' ? [
+    { cat: 'Santé',              v08: 15.6, v13:  9.7, note: '15,6 → 9,7 Md€' },
+    { cat: 'Protection sociale', v08: 41.2, v13: 35.4, note: '41,2 → 35,4 Md€' },
+    { cat: 'Éducation',          v08:  9.1, v13:  8.1, note: '9,1 → 8,1 Md€' },
+    { cat: 'Services généraux',  v08: 27.7, v13: 17.8, note: '27,7 → 17,8 Md€' },
+    { cat: 'Défense',            v08:  7.2, v13:  3.9, note: '7,2 → 3,9 Md€' },
+  ] : [
+    { cat: 'Santé',              v08: 13.0, v13: 11.1, note: '13,0 → 11,1 Md€' },
+    { cat: 'Protection sociale', v08: 27.3, v13: 33.2, note: '27,3 → 33,2 Md€' },
+    { cat: 'Éducation',          v08: 10.7, v13:  9.3, note: '10,7 → 9,3 Md€' },
+    { cat: 'Services généraux',  v08: 13.7, v13: 16.0, note: '13,7 → 16,0 Md€' },
+    { cat: 'Défense',            v08:  2.1, v13:  1.9, note: '2,1 → 1,9 Md€' },
+  ];
+
+  const W    = svgEl.parentElement.clientWidth || 380;
+  const ROW  = 40;
+  const H    = data.length * ROW + 10;
+  const LW   = 118; // largeur label
+  const CW   = W - LW - 20; // largeur chart
+  const ZERO = CW / 2; // centre = 0%
+  const MAX  = 50; // borne % pour l'échelle
+
+  svgEl.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  svgEl.setAttribute('height', H);
+
+  const svg = d3.select(svgEl);
+  const scaleHalf = d3.scaleLinear().domain([0, MAX]).range([0, ZERO]);
+
+  data.forEach((d, i) => {
+    const pct = (d.v13 - d.v08) / d.v08 * 100;
+    const isPos = pct >= 0;
+    const absPct = Math.min(Math.abs(pct), MAX);
+    const barW  = scaleHalf(absPct);
+    const y     = i * ROW + 4;
+    const midY  = y + ROW / 2 - 2;
+
+    // Label catégorie
+    svg.append('text')
+      .attr('x', LW - 8).attr('y', midY)
+      .attr('text-anchor', 'end').attr('dominant-baseline', 'middle')
+      .attr('font-size', '10.5px').attr('fill', INKM)
+      .text(d.cat);
+
+    // Piste fond
+    svg.append('rect')
+      .attr('x', LW).attr('y', y + 5)
+      .attr('width', CW).attr('height', ROW - 12)
+      .attr('fill', PAPERD).attr('rx', 3);
+
+    // Ligne zéro
+    svg.append('line')
+      .attr('x1', LW + ZERO).attr('x2', LW + ZERO)
+      .attr('y1', y + 2).attr('y2', y + ROW - 4)
+      .attr('stroke', '#B0A090').attr('stroke-width', 1);
+
+    // Barre
+    const barX = isPos ? LW + ZERO : LW + ZERO - barW;
+    svg.append('rect')
+      .attr('x', barX).attr('y', y + 7)
+      .attr('width', barW).attr('height', ROW - 16)
+      .attr('fill', color)
+      .attr('rx', 2)
+      .attr('opacity', isPos ? 1 : 0.8);
+
+    // % + valeurs absolues
+    const pctStr = `${isPos ? '+' : ''}${pct.toFixed(0)}%`;
+    const labelX = isPos
+      ? LW + ZERO + barW + 5
+      : LW + ZERO - barW - 5;
+
+    svg.append('text')
+      .attr('x', labelX).attr('y', midY - 4)
+      .attr('text-anchor', isPos ? 'start' : 'end')
+      .attr('dominant-baseline', 'middle')
+      .attr('font-size', '10px').attr('font-weight', '500')
+      .attr('fill', isPos ? color : INKM)
+      .text(pctStr);
+
+    svg.append('text')
+      .attr('x', labelX).attr('y', midY + 8)
+      .attr('text-anchor', isPos ? 'start' : 'end')
+      .attr('dominant-baseline', 'middle')
+      .attr('font-size', '8.5px')
+      .attr('fill', '#A89880')
+      .text(d.note);
+  });
+}
+
+// ─── Barres révélation (échelle absolue 0–22%) ─────────────────
+const ABS_MAX = 22;
+
+function animateRevBars() {
+  const pairs = [
+    ['b-e-c', 6.3], ['b-e-l', 16.9], ['b-e-s', 18.6],
+    ['b-s-c', 2.7], ['b-s-l',  6.5], ['b-s-s', 11.1],
+  ];
+  setTimeout(() => {
+    pairs.forEach(([id, v]) => {
+      const el = document.getElementById(id);
+      if (el) el.style.width = `${(v / ABS_MAX * 100).toFixed(1)}%`;
+    });
+  }, 200);
+}
+
+// ─── Initialisation ────────────────────────────────────────────
+const dotAnimators = {};
+
+function init() {
+  drawBudgetCircle('circ-e', 123, 123, CE);
+  drawBudgetCircle('circ-s',  81, 123, CS);
+
+  dotAnimators['d-e-2010'] = drawDots('d-e-2010',  5.8, CE);
+  dotAnimators['d-s-2010'] = drawDots('d-s-2010',  6.4, CS);
+  dotAnimators['d-e-ch15'] = drawDots('d-e-ch15', 18.4, CE);
+  dotAnimators['d-s-ch15'] = drawDots('d-s-ch15',  8.0, CS);
+  dotAnimators['d-e-lg15'] = drawDots('d-e-lg15', 39.5, CE);
+  dotAnimators['d-s-lg15'] = drawDots('d-s-lg15', 22.7, CS);
+  dotAnimators['d-e-sl15'] = drawDots('d-e-sl15', 17.7, CE);
+  dotAnimators['d-s-sl15'] = drawDots('d-s-sl15', 12.1, CS);
+
+  setTimeout(() => {
+    drawDivergingBars('svg-e-cuts', 'GRC');
+    drawDivergingBars('svg-s-cuts', 'PRT');
+  }, 100);
+}
+
+// ─── Scroll ────────────────────────────────────────────────────
+function initScroll() {
+  const scroller = scrollama();
+  scroller
+    .setup({ step: '.acte', offset: 0.55 })
+    .onStepEnter(({ element }) => {
+      element.classList.add('visible');
+      // Déclencher animation dots des éléments dans cet acte
+      element.querySelectorAll('.dots-svg-wrap').forEach(wrap => {
+        const id = wrap.id;
+        if (dotAnimators[id]) { dotAnimators[id](); dotAnimators[id] = null; }
+      });
+    });
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { animateRevBars(); observer.unobserve(e.target); }
+    });
+  }, { threshold: 0.25 });
+
+  const rev = document.getElementById('revelation');
+  if (rev) observer.observe(rev);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  init();
+  initScroll();
+  window.addEventListener('resize', () => scrollama().resize());
+});
+</script>
+</body>
+</html>
