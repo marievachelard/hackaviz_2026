@@ -180,7 +180,7 @@
     }
 
     /* ── DOTS 100 ─────────────────────────────────────────────── */
-    .dots-block { margin: 2rem 0; }
+    .dots-block { margin: 2rem 0; width: 100%; max-width: 480px; }
 
     .dots-label {
       font-size: 0.65rem; letter-spacing: 0.1em;
@@ -194,7 +194,7 @@
       transition: r 0.15s ease, opacity 0.15s ease;
     }
     .dots-svg-wrap circle.filled:hover {
-      r: 7; opacity: 1;
+      r: 10; opacity: 1;
     }
 
     .dots-big-val {
@@ -204,7 +204,7 @@
     }
 
     /* ── BARRES DIVERGENTES 2013 ──────────────────────────────── */
-    .cuts-block { margin: 1.5rem 0; }
+    .cuts-block { margin: 1.5rem 0; width: 100%; max-width: 480px; }
 
     .cuts-label {
       font-size: 0.6rem; letter-spacing: 0.2em;
@@ -622,7 +622,7 @@ function drawDots(containerId, pct, color) {
   if (!el) return;
 
   const TOTAL = 100;
-  const R = 5, GAP = 4, COLS = 20;
+  const R = 8, GAP = 5, COLS = 20;
   const ROWS = TOTAL / COLS; // 5 rows
   const W = COLS * (R * 2 + GAP) - GAP;
   const H = ROWS * (R * 2 + GAP) - GAP;
