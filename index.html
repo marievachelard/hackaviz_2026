@@ -43,6 +43,26 @@
       color: var(--ink);
       font-family: var(--sans);
       overflow-x: hidden;
+      cursor: none;
+    }
+    a, button, [role="button"], .cut-bar, .dots-svg-wrap circle {
+      cursor: none;
+    }
+    #cursor {
+      position: fixed; top: 0; left: 0;
+      width: 8px; height: 8px;
+      background: var(--ink);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 99999;
+      transform: translate(-50%, -50%);
+      transition: width 0.2s ease, height 0.2s ease, background 0.2s ease, opacity 0.2s ease;
+      mix-blend-mode: multiply;
+    }
+    #cursor.hover {
+      width: 28px; height: 28px;
+      background: var(--eleni);
+      opacity: 0.35;
     }
 
     /* Grain visible — style papier peint texturé */
@@ -373,6 +393,7 @@
 <body>
 
 <!-- ════════ CANVAS RUBANS ══════════════════════════════════════ -->
+<div id="cursor"></div>
 <canvas id="ribbon-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;"></canvas>
 
 <!-- ════════ HERO ════════════════════════════════════════════════ -->
@@ -981,6 +1002,29 @@ function initScroll() {
     }
   }, { threshold: 0.4 }).observe(rev);
 }
+
+// ─── Curseur personnalisé ───────────────────────────────────────
+(function initCursor() {
+  const dot = document.getElementById('cursor');
+  let mx = window.innerWidth / 2, my = window.innerHeight / 2;
+  let cx = mx, cy = my;
+
+  window.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+
+  document.querySelectorAll('a, button, .cut-bar, .portrait-img, .dots-svg-wrap')
+    .forEach(el => {
+      el.addEventListener('mouseenter', () => dot.classList.add('hover'));
+      el.addEventListener('mouseleave', () => dot.classList.remove('hover'));
+    });
+
+  (function loop() {
+    cx += (mx - cx) * 0.12;
+    cy += (my - cy) * 0.12;
+    dot.style.left = cx + 'px';
+    dot.style.top  = cy + 'px';
+    requestAnimationFrame(loop);
+  })();
+})();
 
 // ─── Canvas rubans sinusoïdaux ──────────────────────────────────
 (function initRibbons() {
