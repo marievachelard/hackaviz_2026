@@ -136,7 +136,8 @@
       opacity: 0; filter: blur(6px);
       transition: opacity 0.9s ease 0.4s, filter 0.9s ease 0.4s;
     }
-    .portrait-block.visible strong {
+    .portrait-block.visible strong,
+    .acte.visible .portrait-text strong {
       opacity: 1; filter: blur(0);
     }
     .portrait-block:nth-child(2) strong { transition-delay: 0.6s; }
@@ -414,7 +415,6 @@
     <img src="Eleni.png" alt="Eleni" class="portrait-img">
     <div class="portrait-name" style="color:var(--eleni)">Eleni</div>
     <div class="portrait-city">Athènes · Grèce</div>
-    <p class="portrait-text">Son État dépense <strong style="color:var(--eleni)">11 107 €</strong> par habitant.</p>
   </div>
 
   <!-- Sofia -->
@@ -422,7 +422,6 @@
     <img src="Sofia.png" alt="Sofia" class="portrait-img">
     <div class="portrait-name" style="color:var(--sofia)">Sofia</div>
     <div class="portrait-city">Lisbonne · Portugal</div>
-    <p class="portrait-text">Son État dépense <strong style="color:var(--sofia)">7 716 €</strong> par habitant.</p>
   </div>
 
 </section>
@@ -437,7 +436,7 @@
 <div class="acte" id="acte-2008">
   <div class="eyebrow-center">2008 · Les budgets</div>
   <div class="acte-left">
-    <h2 class="act-h act-h-e">123 milliards d'euros</h2>
+    <p class="portrait-text">Son État dépense <strong style="color:var(--eleni)">11 107 €</strong> par habitant.</p>
     <p class="act-body">
       Au sommet de la croissance. La santé et la protection sociale
       absorbent plus de la moitié des dépenses.
@@ -445,7 +444,7 @@
     <div class="budget-circle-wrap" id="circ-e"></div>
   </div>
   <div class="acte-right">
-    <h2 class="act-h act-h-s">81 milliards d'euros</h2>
+    <p class="portrait-text">Son État dépense <strong style="color:var(--sofia)">7 716 €</strong> par habitant.</p>
     <p class="act-body">
       Moins en valeur absolue. Mais une part proportionnellement
       plus grande consacrée aux filets de sécurité.
