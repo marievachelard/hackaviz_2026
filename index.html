@@ -56,6 +56,11 @@
     }
 
     /* ── HERO ─────────────────────────────────────────────────── */
+    /* Tout le contenu au-dessus du canvas (z-index:1) */
+    section, #sticky-names, .acte, #revelation, #cloture {
+      position: relative; z-index: 2;
+    }
+
     #hero {
       height: 50vh; min-height: 300px;
       display: flex; flex-direction: column;
@@ -339,6 +344,9 @@
 </head>
 
 <body>
+
+<!-- ════════ CANVAS RUBANS ══════════════════════════════════════ -->
+<canvas id="ribbon-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;"></canvas>
 
 <!-- ════════ HERO ════════════════════════════════════════════════ -->
 <section id="hero" style="position:relative">
@@ -953,6 +961,106 @@ function initScroll() {
     }
   }, { threshold: 0.4 }).observe(rev);
 }
+
+// ─── Canvas rubans sinusoïdaux ──────────────────────────────────
+(function initRibbons() {
+  const canvas = document.getElementById('ribbon-canvas');
+  const ctx    = canvas.getContext('2d');
+  const N      = 700;
+
+  // Deux rivières : Eleni (bleu, gauche) et Sofia (terracotta, droite)
+  // Elles partent des deux côtés en haut et convergent au centre en bas.
+  const STREAMS = [
+    {
+      // Eleni — bleu, part du bord gauche
+      x0f: 0.04, x1f: 0.50,
+      color: '#1D4E8F',
+      freq: 3.1, phase: 0,
+      layers: [
+        { lw: 52, alpha: 0.025 },
+        { lw: 36, alpha: 0.050 },
+        { lw: 22, alpha: 0.100 },
+        { lw: 11, alpha: 0.200 },
+        { lw:  4, alpha: 0.600 },
+      ]
+    },
+    {
+      // Sofia — terracotta, part du bord droit
+      x0f: 0.96, x1f: 0.50,
+      color: '#B84A1E',
+      freq: 2.9, phase: Math.PI * 0.65,
+      layers: [
+        { lw: 52, alpha: 0.025 },
+        { lw: 36, alpha: 0.050 },
+        { lw: 22, alpha: 0.100 },
+        { lw: 11, alpha: 0.200 },
+        { lw:  4, alpha: 0.600 },
+      ]
+    }
+  ];
+
+  function computePoints(stream, W, pageH, scrollY) {
+    const x0 = stream.x0f * W;
+    const x1 = stream.x1f * W;
+    // Spine : droite de (x0, 0) à (x1, pageH) en coordonnées page
+    const sdx = x1 - x0, sdy = pageH;
+    const slen = Math.hypot(sdx, sdy);
+    const ux = sdx / slen, uy = sdy / slen;
+    // Perpendiculaire CCW
+    const px = -uy, py = ux;
+
+    const pts = [];
+    for (let i = 0; i <= N; i++) {
+      const t  = i / N;
+      const sx = x0 + t * sdx;
+      const sy = t * pageH;
+
+      // Enveloppe : naît petit, méandre fort au milieu, converge à 0 en bas
+      const env    = Math.sin(Math.PI * t) * Math.pow(1 - t, 0.5);
+      const ampMax = 0.22 * W;
+      const offset = ampMax * env * Math.sin(2 * Math.PI * stream.freq * t + stream.phase);
+
+      // Coordonnées canvas (on soustrait scrollY pour suivre le scroll)
+      pts.push([sx + offset * px, sy + offset * py - scrollY]);
+    }
+    return pts;
+  }
+
+  function drawStream(pts, stream) {
+    stream.layers.forEach(({ lw, alpha }) => {
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.strokeStyle = stream.color;
+      ctx.lineWidth   = lw;
+      ctx.lineCap     = 'round';
+      ctx.lineJoin    = 'round';
+      ctx.beginPath();
+      pts.forEach(([x, y], i) => i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y));
+      ctx.stroke();
+      ctx.restore();
+    });
+  }
+
+  function draw() {
+    const W      = canvas.width  = canvas.offsetWidth;
+    const H      = canvas.height = canvas.offsetHeight;
+    const pageH  = document.body.scrollHeight;
+    const scrollY = window.scrollY;
+
+    ctx.clearRect(0, 0, W, H);
+    STREAMS.forEach(s => drawStream(computePoints(s, W, pageH, scrollY), s));
+  }
+
+  let rafId;
+  function scheduleRedraw() {
+    cancelAnimationFrame(rafId);
+    rafId = requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize',  scheduleRedraw);
+  window.addEventListener('scroll',  scheduleRedraw, { passive: true });
+  scheduleRedraw();
+})();
 
 document.addEventListener('DOMContentLoaded', () => {
   init();
