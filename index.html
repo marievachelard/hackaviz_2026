@@ -630,11 +630,12 @@ function drawDots(containerId, pct, color) {
   const ROWS = TOTAL / COLS; // 5 rows
   const W = COLS * (R * 2 + GAP) - GAP;
   const H = ROWS * (R * 2 + GAP) - GAP;
+  const PAD = R + 2; // marge autour pour que le hover ne soit pas coupé
 
   const svg = d3.select(el).append('svg')
     .attr('width', '100%')
-    .attr('viewBox', `0 0 ${W} ${H}`)
-    .attr('style', 'max-width:' + W + 'px');
+    .attr('viewBox', `-${PAD} -${PAD} ${W + PAD * 2} ${H + PAD * 2}`)
+    .attr('style', 'max-width:' + (W + PAD * 2) + 'px; overflow: visible;');
 
   const defs = svg.append('defs');
 
