@@ -183,6 +183,7 @@
     .dots-block {
       margin: 2rem 0; width: 100%; max-width: 480px;
       display: flex; flex-direction: column; align-items: center;
+      overflow: visible;
     }
 
     .dots-label {
@@ -191,7 +192,7 @@
       max-width: 38ch; text-align: center;
     }
 
-    .dots-svg-wrap { cursor: default; }
+    .dots-svg-wrap { cursor: default; padding-top: 10px; overflow: visible; }
 
     .dots-svg-wrap circle {
       transition: r 0.15s ease, opacity 0.15s ease;
