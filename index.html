@@ -1062,6 +1062,30 @@ function initScroll() {
     const scrollY = window.scrollY;
 
     ctx.clearRect(0, 0, W, H);
+
+    // ── Blob de fusion au point d'origine des rivières (top center) ──
+    const bx = W * 0.50;
+    const by = 0 - scrollY; // origine page = y:0, convertie en canvas
+    const br = W * 0.40;    // rayon du blob
+
+    // Blob bleu — légèrement à gauche
+    const gBlue = ctx.createRadialGradient(bx - W*0.06, by + br*0.18, 0, bx - W*0.06, by + br*0.18, br);
+    gBlue.addColorStop(0,   'rgba(122, 159, 204, 0.90)');
+    gBlue.addColorStop(0.3, 'rgba(122, 159, 204, 0.55)');
+    gBlue.addColorStop(0.6, 'rgba(122, 159, 204, 0.20)');
+    gBlue.addColorStop(1,   'rgba(122, 159, 204, 0)');
+    ctx.fillStyle = gBlue;
+    ctx.fillRect(0, 0, W, H);
+
+    // Blob terracotta — légèrement à droite
+    const gTerra = ctx.createRadialGradient(bx + W*0.06, by + br*0.18, 0, bx + W*0.06, by + br*0.18, br);
+    gTerra.addColorStop(0,   'rgba(212, 133, 106, 0.90)');
+    gTerra.addColorStop(0.3, 'rgba(212, 133, 106, 0.55)');
+    gTerra.addColorStop(0.6, 'rgba(212, 133, 106, 0.20)');
+    gTerra.addColorStop(1,   'rgba(212, 133, 106, 0)');
+    ctx.fillStyle = gTerra;
+    ctx.fillRect(0, 0, W, H);
+
     STREAMS.forEach(s => drawStream(computePoints(s, W, pageH, scrollY), s));
   }
 
