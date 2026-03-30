@@ -130,14 +130,16 @@
       transition: opacity 0.7s ease, transform 0.7s ease;
     }
     .portrait-block.visible { opacity: 1; transform: translateY(0); }
-    .portrait-text strong {
-      font-size: 1rem;
+    .portrait-text strong,
+    .act-h strong {
+      font-size: inherit;
       letter-spacing: -0.01em;
       opacity: 0; filter: blur(6px);
       transition: opacity 0.9s ease 0.4s, filter 0.9s ease 0.4s;
     }
     .portrait-block.visible strong,
-    .acte.visible .portrait-text strong {
+    .acte.visible .portrait-text strong,
+    .acte.visible .act-h strong {
       opacity: 1; filter: blur(0);
     }
     .portrait-block:nth-child(2) strong { transition-delay: 0.6s; }
@@ -436,18 +438,16 @@
 <div class="acte" id="acte-2008">
   <div class="eyebrow-center">2008 · Les dépenses publiques</div>
   <div class="acte-left">
-    <p class="portrait-text">Son État dépense <strong style="color:var(--eleni)">11 107 €</strong> par habitant.</p>
+    <h2 class="act-h act-h-e">Son État dépense <strong style="color:var(--eleni)">11 107 €</strong> par habitant.</h2>
     <p class="act-body">
-      Au sommet de la croissance. La santé et la protection sociale
-      absorbent près de la moitié des dépenses.
+      La santé et la protection sociale absorbent près de la moitié des dépenses.
     </p>
     <div class="budget-circle-wrap" id="circ-e"></div>
   </div>
   <div class="acte-right">
-    <p class="portrait-text">Son État dépense <strong style="color:var(--sofia)">7 716 €</strong> par habitant.</p>
+    <h2 class="act-h act-h-s">Son État dépense <strong style="color:var(--sofia)">7 716 €</strong> par habitant.</h2>
     <p class="act-body">
-      Moins en valeur absolue. Mais une part proportionnellement
-      plus grande consacrée aux filets de sécurité.
+      Une part proportionnellement plus grande est consacrée à la santé et la protection sociale.
     </p>
     <div class="budget-circle-wrap" id="circ-s"></div>
   </div>
